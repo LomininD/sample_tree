@@ -10,8 +10,8 @@ enum tree_view
     inorder
 };
 
-err_t print_tree(const node* node, tree_view print_type);
-err_t print_node(const node* node, tree_view print_type);
+err_t print_tree(const tree* tree, tree_view print_type);
+err_t print_node(const node* node, tree_view print_type, md_t debug_mode);
 void initialize_tree_log(md_t debug_mode);
 
 #define print_data_if(COND, ...) do{                        \

@@ -6,7 +6,7 @@
 const size_t file_name_size = 64;
 const size_t sys_str_size = 200;
 
-void generate_dump_image(const node* node);
+void generate_dump_image(const tree* tree);
 void convert_to_image(char* code_file_name, char* image_file_name);
 void fill_preamble(FILE* fp);
 const node* list_nodes(FILE* fp, const node* current_node);
