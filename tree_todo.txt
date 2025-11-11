@@ -1,0 +1,4 @@
+// TODO - add function throw error that turns on debug mode and prints error + dump in log file
+// TODO - disabling vrificator and debug_mode
+// TODO - replece if in defines with cond compilation 
+// TODO - make different number of args

@@ -1,16 +1,122 @@
 #include "tree_dump.h"
+#include "tree_funcs.h"
 #include <stdio.h>
 #include <assert.h>
 
+size_t node_count = 0;
+
 static int hash(long long int ptr);
+static void convert_to_image(char* code_file_name, char* image_file_name);
+static void fill_preamble(FILE* fp);
+static const node* list_nodes(FILE* fp, const node* current_node);
+static err_t verify_node(const node* node, md_t debug_mode);
+
+err_t verify_tree(const tree* tree)
+{
+    if (tree == NULL)
+    {
+        printf(MAKE_BOLD_RED("ERROR:") "tree not found\n");
+        return no_data;
+    }
+
+    md_t debug_mode = tree->debug_mode;
+
+    int error_count = 0;
+    node_count = 0;
+    err_t nodes_ok = verify_node(tree->root, debug_mode);
+
+    if (tree->err_stat != ok)
+    {
+        printf_err(debug_mode, "err_stat is not ok\n");
+        error_count++;
+    }
+
+    if (nodes_ok != ok)
+    {
+        error_count++;
+    }
+
+    if (node_count != tree->size)
+    {
+        printf_err(debug_mode, "wrong size (should be %zu, but found %zu elements)", tree->size, node_count);
+        error_count++;
+    }
+
+    if (error_count != 0)
+    {
+        struct tree* unlocked_tree = (struct tree*) tree; // to make possible to change err_stat
+        unlocked_tree->err_stat = error;
+        return error;
+    }
+
+    return ok;
+}
 
 
-// make different number of args
+err_t verify_node(const node* node, md_t debug_mode)
+{
+    if (node == NULL)
+        return ok;
+
+    node_count++;
+
+    if (node->data == poison_value)
+    {
+        printf_err(debug_mode, "node [%p] data is poisoned\n", node);
+        return error;
+    }
+
+    if (verify_node(node->left,  debug_mode) == ok && \
+        verify_node(node->right, debug_mode) == ok)
+    {
+        return ok;
+    }
+    else
+    {
+        return error;
+    }
+}
+
+
+err_t process_tree_verification(const tree* tree)
+{
+    err_t verified = verify_tree(tree);
+
+    switch (verified)
+    {
+        case no_data:
+            printf(MAKE_BOLD_RED("verification failed") "not enough data to show additional information\n");
+            return error;
+            break;
+        case error:
+            printf_err(tree->debug_mode, "verification failed\n"); 
+            print_tree_dump(tree);
+            return error;
+            break;
+        case ok:
+            printf_log_msg(tree->debug_mode, "verification passed\n");
+            return ok;
+            break;
+    };
+}
+
+
 void print_tree_dump(const tree* tree)
 {
     assert(tree != NULL);
 
+    md_t debug_mode = tree->debug_mode;
 
+    printf_log_bold(debug_mode, "======================= TREE DUMP =======================\n\n", NULL);
+
+    printf_log_bold(debug_mode, "tree [%p]\n\n", tree);
+    printf_log_msg(debug_mode, "\terr_stat   =  %d (0 - no_error, 1 - error)\n", tree->err_stat);
+    printf_log_msg(debug_mode, "\tdebug_mode =  %d (0 - off, 1 - on)\n", tree->debug_mode);
+    printf_log_msg(debug_mode, "\tsize       =  %zu\n\n", tree->size);
+
+    printf_log_bold(debug_mode, "=========================================================\n\n", NULL);
+
+    generate_dump_image(tree);
 }
 
 
@@ -18,6 +124,9 @@ void print_tree_dump(const tree* tree)
 void generate_dump_image(const tree* tree)
 {
     assert(tree != NULL);
+
+    if (tree->debug_mode == off)
+        return;
 
     static unsigned long long image_count = 0; // size_t?
 

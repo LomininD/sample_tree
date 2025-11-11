@@ -6,14 +6,15 @@
 const size_t file_name_size = 64;
 const size_t sys_str_size = 200;
 
+void print_tree_dump(const tree* tree);
 void generate_dump_image(const tree* tree);
-void convert_to_image(char* code_file_name, char* image_file_name);
-void fill_preamble(FILE* fp);
-const node* list_nodes(FILE* fp, const node* current_node);
+
+err_t verify_tree(const tree* tree);
+err_t process_tree_verification(const tree* tree);
 
 
 #define IMAGE_CODE_EXT "txt"
-#define IMAGE_EXT "png"
+#define IMAGE_EXT "svg"
 #define IMAGE_CODE_PATH "dump_img/code/"
 #define IMAGE_PATH "dump_img/"
 

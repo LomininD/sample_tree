@@ -3,6 +3,8 @@
 
 #include "debug.h"
 
+#define TREE_DEBUG
+
 typedef int tree_el_t;
 
 const tree_el_t poison_value = 0xbadf00d;

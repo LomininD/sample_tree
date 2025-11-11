@@ -20,11 +20,13 @@ int main()
     node node_5 = {5, &node_3, &node_7};
     node root_node = {10, &node_5, &node_20};
 
-    tree my_tree = {&root_node, 0, debug_mode};
+    tree my_tree = {&root_node, 9, debug_mode};
 
     print_tree(&my_tree, inorder);
 
-    generate_dump_image(&my_tree); 
+    process_tree_verification(&my_tree);
+
+    print_tree_dump(&my_tree); 
 
     fclose(log_ptr);
     return 0;

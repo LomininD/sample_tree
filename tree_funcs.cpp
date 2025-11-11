@@ -50,6 +50,5 @@ err_t print_node(const node* node, tree_view print_type, md_t debug_mode)
 
     printf_log_msg(debug_mode, ")");
 
-
     return ok;
 }
