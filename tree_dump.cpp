@@ -145,7 +145,10 @@ void generate_dump_image(const tree* tree)
 
     fprintf(fp, "{\n");
     fprintf(fp, "edge[color = \"#45503B\", penwidth = 1]\n");
-    list_nodes(fp, tree->root);
+
+    if (tree->root != NULL)
+         list_nodes(fp, tree->root);
+         
     fprintf(fp, "}\n\n");
 
     fprintf(fp, "}\n");
@@ -185,8 +188,8 @@ void fill_preamble(FILE* fp)
 
 const node* list_nodes(FILE* fp, const node* current_node)
 {
-    assert(fp);
-    assert(current_node);
+    assert(fp != NULL);
+    assert(current_node != NULL);
 
     fprintf(fp, "NODE_%p [label = <", current_node);
     fprintf(fp, "<TABLE BORDER=\"0\" CELLBORDER=\"1\">");

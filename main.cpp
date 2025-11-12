@@ -5,7 +5,7 @@
 
 int main()
 {
-    md_t debug_mode = off;
+    md_t debug_mode = on;
     initialize_tree_log(debug_mode);
     
     // sample tree structure
@@ -40,10 +40,15 @@ int main()
     print_tree(&my_tree, my_tree.root, inorder);
     print_tree(&ref_tree, ref_tree.root, inorder);
 
+    print_tree_dump(&my_tree); 
+    print_tree_dump(&ref_tree);
+
+    delete_tree(&my_tree, my_tree.root->right);
+
     //process_tree_verification(&my_tree);
 
     print_tree_dump(&my_tree); 
-    print_tree_dump(&ref_tree);
+    //print_tree_dump(&ref_tree);
 
     fclose(log_ptr);
     return 0;

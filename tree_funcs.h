@@ -14,6 +14,8 @@ enum tree_view
 void initialize_tree_log(md_t debug_mode);
 err_t tree_ctor(tree* tree, md_t debug_mode);
 err_t insert_tree(tree* tree, tree_el_t value);
+err_t delete_tree(tree* tree, node* anchor_node);
+
 
 err_t print_tree(const tree* tree, const node* root, tree_view print_type);
 err_t print_node(const node* node, tree_view print_type, md_t debug_mode);

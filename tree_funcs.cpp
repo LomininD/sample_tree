@@ -5,6 +5,7 @@
 
 static node* create_node(md_t debug_mode);
 static bool cmp(tree_el_t value_1, tree_el_t value_2);
+static err_t delete_node(tree* tree, node* node);
 
 
 void initialize_tree_log(md_t debug_mode)
@@ -104,6 +105,90 @@ node* create_node(md_t debug_mode)
     printf_log_msg(debug_mode, "create_node: done creating node [%p]\n", new_node);
 
     return new_node;
+}
+
+err_t delete_tree(tree* tree, node* anchor_node)
+{
+    VERIFY_TREE(error);
+
+    md_t debug_mode = tree->debug_mode;
+
+    printf_log_msg(debug_mode, "delete_tree: began deleting tree from node [%p]\n", anchor_node);
+
+    node** current_node = &tree->root;
+    bool found = false;
+
+    if (*current_node == NULL)
+    {
+        printf_err(debug_mode, "[from delete_tree] -> no elements in tree\n");
+        tree->err_stat = error;
+        return error;
+    }
+
+    if (*current_node == anchor_node)
+    {
+        delete_node(tree, anchor_node);
+        *current_node = NULL;
+        found = true;
+    }
+
+    while(*current_node != NULL && !found)
+    {
+        if ((*current_node)->left == anchor_node)
+        {
+            delete_node(tree, anchor_node);
+            (*current_node)->left = NULL;
+            found = true;
+        }
+        else if ((*current_node)->right == anchor_node)
+        {
+            delete_node(tree, anchor_node);
+            (*current_node)->right = NULL;
+            found = true;
+        }
+        else
+        {
+            if (cmp(anchor_node->data, (*current_node)->data))
+                current_node = &(*current_node)->right;
+            else
+                current_node = &(*current_node)->left;
+        }
+    }
+
+    if (found)
+    {
+        printf_log_msg(debug_mode, "delete_tree: finished deleting node\n");
+        return ok;
+    }
+    else
+    {
+        printf_err(debug_mode, "[from delete_tree] -> node not found\n");
+        tree->err_stat = error;
+        return error;
+    }
+
+    VERIFY_TREE(error);
+
+    DISPLAY_TREE();
+}
+
+
+err_t delete_node(tree* tree, node* node)
+{
+    //printf("deleting [%p]\n", node);
+
+    if (node == NULL)
+        return ok;
+    
+    delete_node(tree, node->left);
+    delete_node(tree, node->right);
+
+    free(node);
+    tree->size--;
+
+    //printf("done deleting [%p]\n", node);
+
+    return ok;
 }
 
 

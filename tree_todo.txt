@@ -1,6 +1,8 @@
 // TODO - add function throw error that turns on debug mode and prints error + dump in log file
-// TODO - disabling vrificator and debug_mode
 // TODO - make different number of args
+// TODO - add counter to all while loops
 
 
 // TODO - update experiment data
+
+// TODO - ask about deleting elements
