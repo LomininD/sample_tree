@@ -15,7 +15,7 @@ err_t verify_tree(const tree* tree)
 {
     if (tree == NULL)
     {
-        printf(MAKE_BOLD_RED("ERROR:") "tree not found\n");
+        printf(MAKE_BOLD_RED("ERROR:") "[from verify_tree] -> tree not found\n");
         return no_data;
     }
 
@@ -27,7 +27,7 @@ err_t verify_tree(const tree* tree)
 
     if (tree->err_stat != ok)
     {
-        printf_err(debug_mode, "err_stat is not ok\n");
+        printf_err(debug_mode, "[from verify_tree] -> err_stat is not ok\n");
         error_count++;
     }
 
@@ -38,7 +38,8 @@ err_t verify_tree(const tree* tree)
 
     if (node_count != tree->size)
     {
-        printf_err(debug_mode, "wrong size (should be %zu, but found %zu elements)", tree->size, node_count);
+        printf_err(debug_mode, "[from verify_tree] -> wrong size (should be %zu, but found %zu elements)",\
+                                                                         tree->size, node_count);
         error_count++;
     }
 
@@ -62,7 +63,7 @@ err_t verify_node(const node* node, md_t debug_mode)
 
     if (node->data == poison_value)
     {
-        printf_err(debug_mode, "node [%p] data is poisoned\n", node);
+        printf_err(debug_mode, "[from verify_node] -> node [%p] data is poisoned\n", node);
         return error;
     }
 

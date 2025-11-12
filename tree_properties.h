@@ -3,7 +3,7 @@
 
 #include "debug.h"
 
-#define TREE_DEBUG
+//#define TREE_VERIFICATION
 
 typedef int tree_el_t;
 

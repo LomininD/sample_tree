@@ -5,11 +5,12 @@
 
 int main()
 {
-    md_t debug_mode = on;
+    md_t debug_mode = off;
     initialize_tree_log(debug_mode);
     
     // sample tree structure
 
+    
     node node_6 = {6, NULL, NULL};
     node node_16 = {16, NULL, NULL};
     node node_13 = {13, NULL, NULL};
@@ -20,13 +21,29 @@ int main()
     node node_5 = {5, &node_3, &node_7};
     node root_node = {10, &node_5, &node_20};
 
-    tree my_tree = {&root_node, 9, debug_mode};
+    tree my_tree = {};
+    tree ref_tree = {&root_node, 9, debug_mode, ok};
 
-    print_tree(&my_tree, inorder);
+    tree_ctor(&my_tree, debug_mode);
 
-    process_tree_verification(&my_tree);
+    insert_tree(&my_tree, 10);
+    insert_tree(&my_tree, 20);
+    insert_tree(&my_tree, 5);
+    insert_tree(&my_tree, 6);
+    insert_tree(&my_tree, 15);
+    insert_tree(&my_tree, 16);
+    insert_tree(&my_tree, 13);
+    insert_tree(&my_tree, 7);
+    insert_tree(&my_tree, 3);
+
+
+    print_tree(&my_tree, my_tree.root, inorder);
+    print_tree(&ref_tree, ref_tree.root, inorder);
+
+    //process_tree_verification(&my_tree);
 
     print_tree_dump(&my_tree); 
+    print_tree_dump(&ref_tree);
 
     fclose(log_ptr);
     return 0;

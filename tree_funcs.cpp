@@ -3,6 +3,10 @@
 #include <assert.h>
 
 
+static node* create_node(md_t debug_mode);
+static bool cmp(tree_el_t value_1, tree_el_t value_2);
+
+
 void initialize_tree_log(md_t debug_mode)
 {
     log_ptr = fopen("tree_log.html", "w");
@@ -10,18 +14,116 @@ void initialize_tree_log(md_t debug_mode)
     printf_log_only(debug_mode, "<h3> +++ TREE LOG +++ </h3>\n");
 }
 
-err_t print_tree(const tree* tree, tree_view print_type)
+
+err_t tree_ctor(tree* tree, md_t debug_mode)
 {
-    assert(tree != NULL);
+    if (tree == NULL)
+    {
+        printf_err(debug_mode, "[from tree_ctor] -> tree not found\n");
+        return error;
+    }
+
+    printf_log_msg(debug_mode, "tree_ctor: began initialising tree [%p]", tree);
+
+    tree->debug_mode = debug_mode;
+
+    VERIFY_TREE(error);
+
+    printf_log_msg(debug_mode, "tree_ctor: finished initialising tree [%p]", tree);
+
+    return ok;
+}
+
+
+err_t insert_tree(tree* tree, tree_el_t value)
+{
+    VERIFY_TREE(error);
 
     md_t debug_mode = tree->debug_mode;
 
-    printf_log_msg(debug_mode, "print_tree: began printing tree from root node [%p]\n\n", tree->root);
+    printf_log_msg(debug_mode, "insert_tree: began inserting %d\n", value);
 
-    err_t printed = print_node(tree->root, print_type, debug_mode);
+    node** current_node = &(tree->root);
+
+    while(*current_node != NULL)
+    {
+        printf_log_msg(debug_mode, "insert_tree: current node is [%p]\n", *current_node);
+
+        if (cmp(value, (*current_node)->data))
+        {
+            printf_log_msg(debug_mode, "insert_tree: %d is greater than %d, right subtree of node [%p] chosen\n", \
+                                                            value, (*current_node)->data, *current_node);
+            current_node = &(*current_node)->right;
+        }
+        else
+        {
+            printf_log_msg(debug_mode, "insert_tree: %d is greater than %d, left subtree of node [%p] chosen\n", \
+                                                           (*current_node)->data, value, *current_node);
+            current_node = &(*current_node)->left;
+        }
+    }
+
+    node* new_node = create_node(debug_mode);
+
+    if (new_node == NULL)
+    {
+        printf_err(debug_mode, "[from insert_tree] -> could not create new node for inserted element\n");
+        tree->err_stat = error;
+        return error;
+    }
+
+    new_node->data = value;
+    *current_node = new_node;
+    tree->size++;
+
+    VERIFY_TREE(error);
+
+    printf_log_msg(debug_mode, "insert_tree: finished inserting %d\n", value);
+
+    DISPLAY_TREE();
+
+    return ok;
+}
+
+
+bool cmp(tree_el_t value_1, tree_el_t value_2)
+{
+    if (value_1 > value_2)
+        return true;
+    else
+        return false;
+}
+
+
+node* create_node(md_t debug_mode)
+{
+    printf_log_msg(debug_mode, "create_node: began creating node\n");
+
+    node* new_node = (node*) calloc(1, sizeof(node));
+
+    printf_log_msg(debug_mode, "create_node: done creating node [%p]\n", new_node);
+
+    return new_node;
+}
+
+
+err_t print_tree(const tree* tree, const node* root, tree_view print_type)
+{
+    assert(root != NULL);
+    assert(tree != NULL);
+
+    VERIFY_TREE(error);
+
+    md_t debug_mode = tree->debug_mode;
+
+    printf_log_msg(debug_mode, "print_tree: began printing tree from node [%p]\n\n", root);
+
+    err_t printed = print_node(root, print_type, debug_mode);
 
     if (printed != ok)
+    {
         return printed;
+    }
 
     printf_both(debug_mode, "\n");
 
