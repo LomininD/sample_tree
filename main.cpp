@@ -48,7 +48,7 @@ int main()
     //process_tree_verification(&my_tree);
 
     print_tree_dump(&my_tree); 
-    //print_tree_dump(&ref_tree);
+    print_tree_dump(&ref_tree);
 
     fclose(log_ptr);
     return 0;

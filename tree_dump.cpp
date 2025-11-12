@@ -9,7 +9,7 @@ static int hash(long long int ptr);
 static void convert_to_image(char* code_file_name, char* image_file_name);
 static void fill_preamble(FILE* fp);
 static const node* list_nodes(FILE* fp, const node* current_node);
-static err_t verify_node(const node* node, md_t debug_mode);
+static err_t verify_node(const node* node, md_t debug_mode, size_t max_size);
 
 err_t verify_tree(const tree* tree)
 {
@@ -23,7 +23,7 @@ err_t verify_tree(const tree* tree)
 
     int error_count = 0;
     node_count = 0;
-    err_t nodes_ok = verify_node(tree->root, debug_mode);
+    err_t nodes_ok = verify_node(tree->root, debug_mode, tree->size);
 
     if (tree->err_stat != ok)
     {
@@ -54,12 +54,18 @@ err_t verify_tree(const tree* tree)
 }
 
 
-err_t verify_node(const node* node, md_t debug_mode)
+err_t verify_node(const node* node, md_t debug_mode, size_t max_size)
 {
     if (node == NULL)
         return ok;
 
     node_count++;
+
+    if (node_count > max_size)
+    {
+        printf_err(debug_mode, "[from verify_node] -> number of nodes is greater than actual size %zu\n", max_size);
+        return error;
+    }
 
     if (node->data == poison_value)
     {
@@ -67,8 +73,8 @@ err_t verify_node(const node* node, md_t debug_mode)
         return error;
     }
 
-    if (verify_node(node->left,  debug_mode) == ok && \
-        verify_node(node->right, debug_mode) == ok)
+    if (verify_node(node->left,  debug_mode, max_size) == ok && \
+        verify_node(node->right, debug_mode, max_size) == ok)
     {
         return ok;
     }
@@ -148,7 +154,7 @@ void generate_dump_image(const tree* tree)
 
     if (tree->root != NULL)
          list_nodes(fp, tree->root);
-         
+
     fprintf(fp, "}\n\n");
 
     fprintf(fp, "}\n");
